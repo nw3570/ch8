@@ -1,5 +1,6 @@
-#include "ch8.h"
 #include <stdio.h>
+#include "ch8.h"
+#include "ch8_internal.h"
 
 #define CH8_FONT_SIZE 80
 
@@ -30,18 +31,22 @@ void ch8_load_font(uint8_t *mem)
     }
 }
 
-size_t ch8_load_program(uint8_t *mem, const char *path)
+size_t ch8_load_program(ch8_t *ch8, const char *path)
 {
-    FILE *rom = fopen(path, "rb");
+    FILE *program_file = fopen(path, "rb");
 
-    if (rom == NULL)
+    if (!program_file)
         return 0;
 
     size_t filesize_max = CH8_MEMORY_SIZE - CH8_PROGRAM_START;
-    uint8_t *start = &mem[CH8_PROGRAM_START];
-    
-    size_t bytes_read = fread(start, sizeof (uint8_t), filesize_max, rom);
-    fclose(rom);
+    size_t bytes_read = fread(
+        &ch8->mem[CH8_PROGRAM_START],
+        sizeof (uint8_t),
+        filesize_max,
+        program_file
+    );
+
+    fclose(program_file);
 
     return bytes_read;
 }

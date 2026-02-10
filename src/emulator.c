@@ -1,40 +1,68 @@
+#include "ui.h"
 #include "ch8.h"
-#include "timing.h"
+#include <stddef.h>
+#include <time.h>
 
-void ch8_run(const char *program_path, int cpu_hz)
+static double now_sec()
 {
-    // Inicializar componentes.
-    uint8_t mem[CH8_MEMORY_SIZE] = { 0 };
-    //uint8_t keypad[16] = { 0 };
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
 
-    ch8cpu_t cpu = { 0 };
-    cpu.program_counter = CH8_PROGRAM_START;
+    return ts.tv_sec + (double) ts.tv_nsec / 1e9;
+}
 
-    ch8_load_font(mem);
-    ch8_load_program(mem, program_path);
+static void emulator_loop(ch8_t *machine, int cpu_hz)
+{
+    const double cpu_period = 1.0 / cpu_hz;
+    const double timers_period = 1.0 / 60.0;
 
-    ch8display_t display = { 0 };
-    ch8_display_clear(&display);
-    display.draw_flag = 0;
-
-    // Timing
     double cpu_time_acc = 0.0;
-    //double timers_time_acc = 0.0;
+    double timers_time_acc = 0.0;
     double last_time = now_sec();
 
     while (1) {
+        // ui_set_keypad_state(machine);
+
         double current_time = now_sec();
         double delta = current_time - last_time;
         last_time = current_time;
 
-        if (delta > 0.1)
-            delta = 0.1;
+        cpu_time_acc += delta;
+        timers_time_acc += delta;
 
-        int cpu_ticks = count_ticks(&cpu_time_acc, 1.0 / cpu_hz, delta);
-        for (int i = 0; i < cpu_ticks; i++) {
-            ch8_step(&cpu, mem, &display);
+        while (cpu_time_acc >= cpu_period) {
+            ch8_emulate_cycle(machine);
+            cpu_time_acc -= cpu_period;
         }
 
-        ch8_display_ncurses_render(&display);
+        while (timers_time_acc >= timers_period) {
+            ch8_tick_timers(machine);
+            
+            if (ch8_display_needs_redraw(machine)) {
+                ui_display_render(machine);
+                ch8_display_clear_redraw(machine);
+            }
+
+            timers_time_acc -= timers_period;
+        }  
     }
+}
+
+void emulator_run(const char *program_path, int cpu_hz)
+{
+    ch8_t *machine = ch8_alloc();
+
+    if (!machine)
+        return;
+
+    if (ch8_load_program(machine, program_path) == 0) {
+        ch8_free(machine);
+        return;
+    }
+
+    ui_setup();
+    emulator_loop(machine, cpu_hz);
+
+    ui_end();
+    ch8_free(machine);
 }

@@ -1,4 +1,4 @@
-#include "ch8.h"
+#include "emulator.h"
 #include "opts.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,11 +16,6 @@ int main(int argc, char *argv[])
     if (status > 0)
         exit(status);
 
-    initscr();
-    noecho();
-    cbreak();
-
-    ch8_run(options.program_path, options.cpu_hz);
-    endwin();
+    emulator_run(options.program_path, options.cpu_hz);
     return 0;
 }

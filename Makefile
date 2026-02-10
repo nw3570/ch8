@@ -1,9 +1,9 @@
-SRC_DIR  := src
-OBJ_DIR  := obj
-TARGET   := ch8
+SRC_DIRS  := src src/core src/lib
+OBJ_DIR   := obj
+TARGET    := ch8
 
-SRCS := $(wildcard $(SRC_DIR)/*.c)
-OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+SRCS := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
+OBJS := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 CC       := gcc
 INCLUDES := -Iinclude
@@ -22,7 +22,7 @@ clean:
 $(TARGET): $(OBJS)
 	$(CC) $^ $(LDFLAGS) -o $@
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: %.c
 	mkdir -p $(dir $@)
 	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
 
