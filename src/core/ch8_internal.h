@@ -33,7 +33,7 @@ struct ch8 {
     uint8_t mem[CH8_MEMORY_SIZE];
     ch8display_t disp;
     ch8cpu_t cpu;
-    //uint16_t keys;
+    uint16_t keys;
 };
 
 // Display
@@ -52,7 +52,7 @@ void ch8_load_font(uint8_t *mem);
 
 // Teclado
 uint8_t ch8_key_is_pressed(uint16_t keys, uint8_t target);
-uint8_t ch8_key_any_pressed(uint16_t keys);
+uint8_t ch8_key_first_pressed(uint16_t keys);
 
 // CPU
 void     ch8_cpu_init(ch8cpu_t *);

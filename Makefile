@@ -1,4 +1,4 @@
-SRC_DIRS  := src src/core src/lib
+SRC_DIRS  := src src/core src/ui
 OBJ_DIR   := obj
 TARGET    := ch8
 

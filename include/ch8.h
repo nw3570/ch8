@@ -13,6 +13,6 @@ void    ch8_tick_timers(ch8_t *);
 uint8_t ch8_get_display_pixel(ch8_t *, uint8_t x, uint8_t y);
 int     ch8_display_needs_redraw(ch8_t *);
 void    ch8_display_clear_redraw(ch8_t *);
-//void   ch8_set_keypad(ch8_t *, uint16_t new_keys);
+void    ch8_set_keypad(ch8_t *, uint16_t new_keys);
 
 #endif // CH8_H

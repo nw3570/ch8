@@ -63,12 +63,15 @@ static void __opcode_8xxx(uint8_t *V, struct decode *dec)
             break;
         case 0x1: // OR Vx, Vy
             V[dec->x] |= V[dec->y];
+            V[0xf] = 0;
             break;
         case 0x2: // AND Vx, Vy
             V[dec->x] &= V[dec->y];
+            V[0xf] = 0;
             break;
         case 0x3: // XOR Vx, Vy
             V[dec->x] ^= V[dec->y];
+            V[0xf] = 0;
             break;
         case 0x4: { // ADD Vx, Vy
             uint16_t sum = V[dec->x] + V[dec->y];
@@ -106,8 +109,16 @@ static void __opcode_fxxx(ch8_t *ch8, struct decode *dec)
         case 0x18: // LD ST, Vx - Settar timer de som.
             // Não implementado!
             break;
-        case 0x0a: // LD Vx, K
+        case 0x0a: { // LD Vx, K
+            uint8_t pressed_key = ch8_key_first_pressed(ch8->keys);
+            
+            if (pressed_key != 0xff)
+                ch8->cpu.V[dec->x] = pressed_key;
+            else
+                ch8->cpu.pc -= 2;
+
             break;
+        }
         case 0x1e: // ADD I, Vx
             ch8->cpu.I += ch8->cpu.V[dec->x];
             break;
@@ -123,14 +134,16 @@ static void __opcode_fxxx(ch8_t *ch8, struct decode *dec)
             break;
         }
         case 0x55: // LD [I], Vx
-            for (uint8_t idx = 0; idx < dec->x; idx++) {
+            for (uint8_t idx = 0; idx <= dec->x; idx++) {
                 ch8->mem[ch8->cpu.I + idx] = ch8->cpu.V[idx];
             }
+            ch8->cpu.I += dec->x + 1;
             break;
         case 0x65: // LD Vx, [I]
-            for (uint8_t idx = 0; idx < dec->x; idx++) {
+            for (uint8_t idx = 0; idx <= dec->x; idx++) {
                 ch8->cpu.V[idx] = ch8->mem[ch8->cpu.I + idx];
             }
+            ch8->cpu.I += dec->x + 1;
             break;
     }
 }
@@ -200,8 +213,18 @@ void ch8_execute_instruction(ch8_t *ch8, uint16_t opcode)
                 &ch8->mem[ch8->cpu.I]
             );
             break;
-        case 0xe:
+        case 0xe: { 
+            // SKP
+            int condition = ch8_key_is_pressed(ch8->keys, ch8->cpu.V[dec.x]);
+
+            if (dec.kk == 0xa1) // SKNP
+                condition = !condition;
+
+            if (condition)
+                ch8->cpu.pc += 2;
+
             break;
+        }
         case 0xf:
             __opcode_fxxx(ch8, &dec);
             break;
