@@ -76,7 +76,7 @@ void opcode_fxkk(ch8_t *ch8, uint8_t x, uint8_t kk)
     switch (kk) {
         case 0x07: {
             // LD Vx, DT - Colocar o valor no registrador do delay timer em V[x].
-            ch8->delay_timer = ch8->cpu.V[x];
+            ch8->cpu.V[x] = ch8->delay_timer;
             break;
         }
         case 0x0a: {
