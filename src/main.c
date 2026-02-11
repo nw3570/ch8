@@ -1,8 +1,5 @@
 #include "emulator.h"
-#include "opts.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <ncurses.h>
+#include "cli.h"
 
 int main(int argc, char *argv[])
 {
@@ -10,11 +7,10 @@ int main(int argc, char *argv[])
 
     int status = ch8_parse_options(argc, argv, &options);
 
-    if (status == 1)
-        printf("help");
-
-    if (status > 0)
-        exit(status);
+    if (status != 0) {
+        ch8_print_help(argv[0]);
+        return status;
+    }
 
     emulator_run(options.program_path, options.cpu_hz);
     return 0;

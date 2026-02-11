@@ -27,4 +27,12 @@ typedef struct {
  */
 int ch8_parse_options(int argc, char **argv, ch8opts_t *options);
 
+/*
+ * Imprime mensagem de ajuda do programa, explicando o funcionamento.
+ *
+ * Parâmetros:
+ *   prog_name Uma string com o nome do programa.
+ */
+void ch8_print_help(const char *prog_name);
+
 #endif // OPTS_H
