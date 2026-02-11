@@ -26,7 +26,7 @@ static int key_map(char c)
     return -1;
 }
 
-static void get_keys(uikey_t keys[UI_KEYS_COUNT])
+static void get_keys(uikey_t keys[CH8_KEYS_COUNT])
 {
     char c;
 
@@ -52,11 +52,11 @@ static void update_key(uikey_t *key)
         key->pressed = 0;
 }
 
-void ui_keys_update(uikey_t keys[UI_KEYS_COUNT])
+void ui_keys_update(uikey_t keys[CH8_KEYS_COUNT])
 {
     get_keys(keys);
 
-    for (int i = 0; i < UI_KEYS_COUNT; i++) {
+    for (uint8_t i = 0; i < CH8_KEYS_COUNT; i++) {
         update_key(&keys[i]);
     }
 }

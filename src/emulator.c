@@ -1,14 +1,15 @@
 #include "ui.h"
 #include "ch8.h"
+#include <time.h>
 #include <unistd.h>
 
-#define EMULATOR_LOOP_DELAY 16666
+#define NS_PER_FRAME 16666666l
 
 static uint16_t keys_bitmask(uikey_t *keys)
 {
     uint16_t mask = 0;
 
-    for (int i = 0; i < UI_KEYS_COUNT; i++) {
+    for (uint8_t i = 0; i < CH8_KEYS_COUNT; i++) {
         if (keys[i].pressed)
             mask |= (1 << i);
     }
@@ -37,17 +38,29 @@ static void run_frame(ch8_t *machine, uikey_t *keys, int cycles_per_frame)
 static void emulator_loop(ch8_t *machine, uikey_t *keys, int cpu_hz)
 {
     const int cycles_per_frame = cpu_hz / 60;
+    struct timespec next_frame = { 0 };
     
+    clock_gettime(CLOCK_MONOTONIC, &next_frame);
+
     while (1) {
         run_frame(machine, keys, cycles_per_frame);
-        usleep(16666);
+        
+        next_frame.tv_nsec += NS_PER_FRAME;
+
+        if (next_frame.tv_nsec >= 1000000000L) {
+            next_frame.tv_sec++;
+            next_frame.tv_nsec -= 1000000000L;
+        }
+
+        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_frame, NULL);
+        //usleep(16666);
     }
 }
 
 void emulator_run(const char *program_path, int cpu_hz)
 {
     ch8_t *machine = ch8_alloc();
-    uikey_t keys[UI_KEYS_COUNT] = { 0 };
+    uikey_t keys[CH8_KEYS_COUNT] = { 0 };
 
     if (!machine)
         return;

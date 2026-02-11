@@ -5,7 +5,6 @@ Emulador CHIP-8 escrito em C, com foco em estudo de emulação, organização de
 ## Organização do projeto
 `Em progresso...`
 
-
 ## Funcionalidades implementadas
 `Em progresso...`
 
@@ -18,3 +17,4 @@ Emulador CHIP-8 escrito em C, com foco em estudo de emulação, organização de
 - [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM)
 - [Github - trapext/chip-8_documentation](https://github.com/trapexit/chip-8_documentation)
 - [Github - mattmikolay/chip-8](https://github.com/mattmikolay/chip-8)
+- [Github - Timendus/chip8-test-suite](https://github.com/Timendus/chip8-test-suite)

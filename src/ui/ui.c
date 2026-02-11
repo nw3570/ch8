@@ -6,8 +6,10 @@ void ui_setup()
 {
     initscr();
     cbreak();
-    nodelay(stdscr, 1);
+    noecho();
+    timeout(0);
     curs_set(0);
+    leaveok(stdscr, 1);
 }
 
 void ui_end()
@@ -17,7 +19,9 @@ void ui_end()
 
 void ui_display_render(ch8_t *machine)
 {
-      for (uint8_t y = 0; y < CH8_DISPLAY_HEIGHT; y++) {
+    erase();
+
+    for (uint8_t y = 0; y < CH8_DISPLAY_HEIGHT; y++) {
         for (uint8_t x = 0; x < CH8_DISPLAY_WIDTH; x++) {
             uint8_t pixel = ch8_get_display_pixel(machine, x, y);
             char c = pixel == CH8_PIXEL_ON ? '#' : ' ';
@@ -27,5 +31,6 @@ void ui_display_render(ch8_t *machine)
         }
     }
 
-    refresh();
+    wnoutrefresh(stdscr);
+    doupdate();
 }

@@ -1,7 +1,7 @@
 #include "ch8_internal.h"
 #include "ch8.h"
 
-uint8_t ch8_key_is_pressed(uint16_t keys, uint8_t target)
+int ch8_key_is_pressed(uint16_t keys, uint8_t target)
 {
     return (keys >> target) & 1;
 }
