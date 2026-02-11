@@ -52,7 +52,7 @@ void ch8_load_font(uint8_t *mem);
 
 // Teclado
 uint8_t ch8_key_is_pressed(uint16_t keys, uint8_t target);
-uint8_t ch8_key_first_pressed(uint16_t keys);
+int ch8_key_first_pressed(uint16_t keys, uint8_t *out_key);
 
 // CPU
 void     ch8_cpu_init(ch8cpu_t *);
