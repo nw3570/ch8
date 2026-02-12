@@ -5,7 +5,7 @@ TARGET    := ch8
 SRCS := $(foreach dir, $(SRC_DIRS), $(wildcard $(dir)/*.c))
 OBJS := $(patsubst %.c,$(OBJ_DIR)/%.o,$(SRCS))
 
-CC       := gcc
+CC       := cc
 INCLUDES := -Iinclude
 CFLAGS   := -Wall -Wextra
 LDFLAGS  := -lncurses
