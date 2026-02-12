@@ -1,4 +1,3 @@
-#include <string.h>
 #include <ncurses.h>
 #include "ui.h"
 
@@ -26,7 +25,7 @@ static int key_map(char c)
     return -1;
 }
 
-static void get_keys(uikey_t keys[CH8_KEYS_COUNT])
+static int get_keys(uikey_t keys[CH8_KEYS_COUNT])
 {
     char c;
 
@@ -36,8 +35,15 @@ static void get_keys(uikey_t keys[CH8_KEYS_COUNT])
         if (key > 0) {
             keys[key].pressed = 1;
             keys[key].frames_left = UI_KEYS_FRAME_TIMEOUT;
+            continue;
         }
+
+        // Se ler ESC, retorno indica requisição para sair.
+        if (key == UI_KEY_EXIT)
+            return 1; 
     }
+
+    return 0;
 }
 
 static void update_key(uikey_t *key)
@@ -52,11 +58,13 @@ static void update_key(uikey_t *key)
         key->pressed = 0;
 }
 
-void ui_keys_update(uikey_t keys[CH8_KEYS_COUNT])
+int ui_keys_update(uikey_t keys[CH8_KEYS_COUNT])
 {
-    get_keys(keys);
+    int exit = get_keys(keys);
 
     for (uint8_t i = 0; i < CH8_KEYS_COUNT; i++) {
         update_key(&keys[i]);
     }
+
+    return exit;
 }

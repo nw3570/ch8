@@ -4,6 +4,7 @@
 #include "ch8_defs.h" // ch8_t
 #include <stdint.h> // uint8_t
 
+#define UI_KEY_EXIT '\033' // ESC
 #define UI_KEYS_FRAME_TIMEOUT 15
 
 typedef struct {
@@ -40,7 +41,23 @@ void ui_end();
  */
 void ui_display_render(ch8_t *);
 
-
-void ui_keys_update(uikey_t keys[CH8_KEYS_COUNT]);
+/*
+ * Atualiza o estado das teclas a partir da entrada do usuário.
+ *
+ * Realiza a leitura de entrada do teclado e atualiza o estado interno das 
+ * teclas mapeadas para o teclado hexadecimal do CHIP-8, tratando também a 
+ * lógica de persistência necessária para que a entrada possa
+ * ser corretamente interpretada pelo núcleo do emulador.
+ *
+ * A função detecta solicitação de encerramento da execução.
+ *
+ * Parâmetros:
+ *  keys Array contendo o estado das teclas do CHIP-8, que será atualizado.
+ *
+ * Retorno:
+ *  0  Execução normal.
+ *  1  Solicitação de encerramento da execução (leu entrada igual a UI_KEY_EXIT.
+ */
+int ui_keys_update(uikey_t keys[CH8_KEYS_COUNT]);
 
 #endif // UI_H

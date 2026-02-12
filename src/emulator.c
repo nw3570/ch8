@@ -1,9 +1,9 @@
 #include "ui.h"
 #include "ch8.h"
-#include <time.h>
 #include <unistd.h>
 
-#define NS_PER_FRAME 16666666l
+#define FRAME_HZ 60
+#define SLEEP_TIME 16666
 
 static uint16_t keys_bitmask(uikey_t *keys)
 {
@@ -17,13 +17,9 @@ static uint16_t keys_bitmask(uikey_t *keys)
     return mask;
 }
 
-static void run_frame(ch8_t *machine, uikey_t *keys, int cycles_per_frame)
-{
-    ui_keys_update(keys);
-    uint16_t keypad_state = keys_bitmask(keys);
-    ch8_set_keypad(machine, keypad_state);
-        
-    for (int c = 0; c < cycles_per_frame; c++) {
+static void run_frame(ch8_t *machine, int frame_cycles)
+{     
+    for (int c = 0; c < frame_cycles; c++) {
         ch8_emulate_cycle(machine);
     }
 
@@ -37,23 +33,19 @@ static void run_frame(ch8_t *machine, uikey_t *keys, int cycles_per_frame)
 
 static void emulator_loop(ch8_t *machine, uikey_t *keys, int cpu_hz)
 {
-    const int cycles_per_frame = cpu_hz / 60;
-    struct timespec next_frame = { 0 };
-    
-    clock_gettime(CLOCK_MONOTONIC, &next_frame);
+    const int cycles_per_frame = cpu_hz / FRAME_HZ;
 
     while (1) {
-        run_frame(machine, keys, cycles_per_frame);
-        
-        next_frame.tv_nsec += NS_PER_FRAME;
+        if(ui_keys_update(keys))
+            break;
 
-        if (next_frame.tv_nsec >= 1000000000L) {
-            next_frame.tv_sec++;
-            next_frame.tv_nsec -= 1000000000L;
-        }
+        uint16_t keypad_state = keys_bitmask(keys);
+        ch8_set_keypad(machine, keypad_state);
 
-        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &next_frame, NULL);
-        //usleep(16666);
+        run_frame(machine, cycles_per_frame);
+
+        // Espera tempo para sincronizar em aproximadamente 60Hz.
+        usleep(SLEEP_TIME);
     }
 }
 

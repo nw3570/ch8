@@ -4,19 +4,20 @@
 #include <getopt.h>
 
 #define OPTS_SHORT "+f:h"
+#define CH8_CPU_DEFAULT_HZ 700
 
 int ch8_parse_options(int argc, char **argv, ch8opts_t *options)
 {
     if (options == NULL)
         return 0;
 
-    options->cpu_hz = 700;
+    options->cpu_hz = CH8_CPU_DEFAULT_HZ;
     int opt;
 
     while ((opt = getopt(argc, argv, OPTS_SHORT)) != -1) {
         switch (opt) {
             case 'h': // help
-                return 0;
+                return 1;
             case 'f': // Frequência da CPU
                 options->cpu_hz = atoi(optarg);
                 break;
@@ -41,7 +42,10 @@ void ch8_print_help(const char *prog_name)
     printf("  %s [opções] <arquivo>\n\n", prog_name);
 
     printf("Opções:\n");
-    printf("  -f <hz>    Frequência da CPU (padrão: 700 Hz)\n");
+    printf(
+        "  -f <hz>    Frequência da CPU (padrão: %d Hz)\n",
+        CH8_CPU_DEFAULT_HZ
+    );
     printf("  -h         Exibe esta ajuda\n\n");
 
     printf("Mapeamento de Teclado:\n\n");
