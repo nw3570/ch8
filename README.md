@@ -1,15 +1,66 @@
 # ch8
 
-Emulador CHIP-8 escrito em C, com foco em estudo de emulação, organização de código e compreensão do funcionamento do sistema clássico CHIP-8.
+Emulador CHIP-8 escrito em C, com foco em estudo de emulação, organização de código e compreensão do funcionamento do sistema clássico CHIP-8. Trata-se de uma implementação funcional, com limitações de robustez e compatibilidade.
 
 ## Organização do projeto
-`Em progresso...`
+```
+.
+├── include/        # Interfaces públicas (cabeçalhos)
+├── src/
+│   ├── core/       # Núcleo do emulador (CPU, memória, display, opcodes)
+│   ├── ui/         # Interface baseada em ncurses
+│   ├── cli.c       # Parsing de argumentos
+│   ├── emulator.c  # Gerenciamento da execução
+│   └── main.c      # Ponto de entrada
+```
 
-## Funcionalidades implementadas
-`Em progresso...`
+## Como compilar
+
+Requer:
+- Compilador C
+- ncurses
+
+```sh
+make
+```
+
+Caso não utilize `make`, é possível compilar diretamente com:
+
+```sh
+cc -Iinclude src/*.c src/core/*.c src/ui/*.c -lncurses -o ch8
+```
 
 ## Como executar
-`Em progresso...`
+
+```sh
+./ch8 [opções] <rom>
+```
+
+### Opções
+
+```
+-f <hz>    Define a frequência da CPU (padrão: 700 Hz)
+-h         Exibe mensagem de ajuda
+```
+
+### Exemplo
+
+```sh
+./ch8 -f 800 roms/PONG.ch8
+```
+
+### Mapeamento de teclas
+
+O teclado hexadecimal do CHIP-8 (4x4) é mapeado para teclas do teclado QWERTY da seguinte forma:
+
+```
+CHIP-8        Teclado
+
+1 2 3 C       1 2 3 4
+4 5 6 D   →   Q W E R
+7 8 9 E       A S D F
+A 0 B F       Z X C V
+```
 
 ## Materiais de referência
 - [Wikipedia - CHIP-8](https://en.wikipedia.org/wiki/CHIP-8)
